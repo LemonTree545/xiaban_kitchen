@@ -404,7 +404,12 @@ async function loadFromCloud(){
     if(s.cuisines&&s.cuisines.length)D.cuisines=s.cuisines;
     if(s.dishes&&s.dishes.length){D.dishes=s.dishes;D.dishes.forEach(d=>{if(!d.cuisine)d.cuisine='家常菜';if(!d.image)d.image='';if(!d.ingredients)d.ingredients=[]});}
     if(s.veggies&&s.veggies.length)D.veggies=s.veggies;
-    if(s.communities&&s.communities.length)D.communities=s.communities;
+    if(s.communities&&s.communities.length){
+      var firstName=s.communities[0]&&s.communities[0].name;
+      var isValid=firstName&&(firstName.indexOf('徐阳')>=0||firstName.indexOf('众泾')>=0||(firstName.charCodeAt(0)>0x4e00&&firstName.charCodeAt(0)<0x9fff));
+      D.communities=isValid?s.communities:JSON.parse(JSON.stringify(DEF_COMMUNITIES));
+      if(!isValid){save();}
+    }
     if(s.orders)D.orders=s.orders;
     if(s.customers)D.customers=s.customers;
     if(s.settings&&s.settings.password)D.password=s.settings.password;
@@ -425,7 +430,7 @@ let sel={},selVeg={},selVegCut={},oName='',oWxName='',oAddr={cid:'',bid:'',uid:'
     if(!D.veggies||!D.veggies.length)D.veggies=JSON.parse(JSON.stringify(VEG_DEFAULTS));
     if(!D.vegWeekly||!D.vegWeekly.length)D.vegWeekly=[...VEG_DEFAULTS.map(function(v){return v.id})];
     if(!D.tutorials)D.tutorials=JSON.parse(JSON.stringify(TUTORIAL_DEFAULTS));
-    if(!D.communities||!D.communities.length)D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));
+    if(!D.communities||!D.communities.length){D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));}else{var cn=D.communities[0]&&D.communities[0].name;if(cn&&cn.charCodeAt(0)<0x4e00){D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));save();}}
     D.dishes.forEach(function(d){if(!d.cuisine)d.cuisine='家常菜';if(!d.image)d.image='';if(!d.ingredients)d.ingredients=[];});
     if(!D.paymentQR_wx&&D.paymentQR){D.paymentQR_wx=D.paymentQR;D.paymentQR_alipay='';}
   }}catch(e){}
@@ -547,24 +552,80 @@ function adjVegWt(id,delta){
   buildMenu();bldCartFloat();
 }
 
-// ==================== CART FLOAT ====================
+// ==================== CART ====================
 function bldCartFloat(){
   var el=document.getElementById('cart-float');if(!el)return;
   var dishCount=0,vegCount=0,total=0;
   Object.keys(sel).forEach(function(id){
-    if(sel[id]&&sel[id]!=='不选'){dishCount++}
+    if(sel[id]&&sel[id]!=='不选'){dishCount++;var d=D.dishes.find(function(x){return x.id===id});if(d){var pt=sel[id]||'中';var m=pt==='小'?.7:pt==='大'?1.3:1;total+=Math.round(d.price*m)}}
   });
   Object.keys(selVeg).forEach(function(id){
     var g=selVeg[id]||0;if(g>0){vegCount++;var v=D.veggies.find(function(x){return x.id===id});if(v)total+=g*v.pricePerGram}
-  });
-  // Estimate dish total (rough)
-  Object.keys(sel).forEach(function(id){
-    if(sel[id]&&sel[id]!=='不选'){var d=D.dishes.find(function(x){return x.id===id});if(d){var pt=sel[id]||'中';var m=pt==='小'?.7:pt==='大'?1.3:1;total+=Math.round(d.price*m)}}
   });
   var cnt=dishCount+vegCount;
   document.getElementById('cart-cnt').textContent=cnt;
   document.getElementById('cart-sum').textContent='¥'+total.toFixed(1);
   el.className='cart-float'+(cnt>0?' on':'');
+  el.onclick=function(){if(cnt>0)showCart();};
+}
+
+function showCart(){
+  var html='';
+  var total=0;
+  // Dishes in cart
+  Object.keys(sel).forEach(function(id){
+    if(sel[id]&&sel[id]!=='不选'){
+      var d=D.dishes.find(function(x){return x.id===id});if(!d)return;
+      var pt=sel[id]||'中';var m=pt==='小'?.7:pt==='大'?1.3:1;var price=Math.round(d.price*m);
+      total+=price;
+      html+='<div class="vo-item" style="align-items:flex-start">'
+        +'<div class="vo-img">'+dishImg(d,'24px')+'</div>'
+        +'<div class="vo-info"><div class="vo-name">'+d.name+'</div><div class="vo-detail">'+d.cuisine+' · ¥'+d.price+'/中份</div>'
+        +'<div class="pt-group" style="margin-top:4px" onclick="event.stopPropagation()">'
+          +'<div class="pt-btn'+(pt==='小'?' active':'')+'" onclick="setP(''+id+'','小');buildMenu();showCart()">小</div>'
+          +'<div class="pt-btn'+(pt==='中'?' active':'')+'" onclick="setP(''+id+'','中');buildMenu();showCart()">中</div>'
+          +'<div class="pt-btn'+(pt==='大'?' active':'')+'" onclick="setP(''+id+'','大');buildMenu();showCart()">大</div>'
+        +'</div></div>'
+        +'<div style="text-align:right;flex-shrink:0"><div class="vo-price">¥'+price+'</div>'
+        +'<button class="vo-remove" onclick="event.stopPropagation();sel[''+id+'']='不选';buildMenu();showCart()" style="margin-top:4px">× 删除</button></div>'
+        +'</div>';
+    }
+  });
+  // Veggies in cart
+  Object.keys(selVeg).forEach(function(id){
+    var g=selVeg[id]||0;if(g>0){
+      var v=D.veggies.find(function(x){return x.id===id});if(!v)return;
+      var cut=selVegCut[id]||'块状';
+      var price=Math.round(g*v.pricePerGram*100)/100;
+      total+=price;
+      html+='<div class="vo-item" style="align-items:flex-start">'
+        +'<div class="vo-img">'+vegImg(v)+'</div>'
+        +'<div class="vo-info"><div class="vo-name">'+v.name+'</div><div class="vo-detail">'+cut+' · ¥'+((v.pricePerGram*100)).toFixed(2)+'/100g</div>'
+        +'<div class="wt-row" style="margin-top:4px" onclick="event.stopPropagation()">'
+          +'<input type="number" class="wt-input" value="'+g+'" min="0" step="10" onchange="selVeg[''+id+'']=parseInt(this.value)||0;showCart();buildMenu();bldCartFloat()" onclick="event.stopPropagation()">'
+          +'<span class="wt-unit">g</span>'
+          +'<button class="wt-btn" onclick="event.stopPropagation();adjVegWt2(''+id+'',-50)">−</button>'
+          +'<button class="wt-btn" onclick="event.stopPropagation();adjVegWt2(''+id+'',50)">+</button>'
+        +'</div></div>'
+        +'<div style="text-align:right;flex-shrink:0"><div class="vo-price">¥'+price.toFixed(1)+'</div>'
+        +'<button class="vo-remove" onclick="event.stopPropagation();selVeg[''+id+'']=0;showCart();buildMenu();bldCartFloat()" style="margin-top:4px">× 删除</button></div>'
+        +'</div>';
+    }
+  });
+
+  if(!html)html='<div class="empty">🛒<p>购物车是空的</p></div>';
+  else html='<div style="padding-bottom:80px">'+html+'</div><div style="position:sticky;bottom:0;background:var(--white);padding:12px 0;border-top:1px solid var(--gray-100);text-align:center;display:flex;gap:10px;align-items:center;justify-content:center"><b style="font-size:16px;color:var(--orange)">合计 ¥'+total.toFixed(1)+'</b><button class="btn btn-primary" style="width:auto;flex-shrink:0" onclick="document.getElementById('cart-modal').remove();goPage('order')">去结算 →</button></div>';
+
+  var ex=document.getElementById('cart-modal');if(ex)ex.remove();
+  document.body.insertAdjacentHTML('beforeend','<div class="modal-overlay" id="cart-modal" onclick="if(event.target===this)this.remove()"><div class="modal-box" style="max-width:440px"><button class="modal-close" onclick="document.getElementById('cart-modal').remove()">✕</button><h3 style="font-size:18px;margin-bottom:12px">🛒 购物车</h3>'+html+'</div></div>');
+}
+
+function adjVegWt2(id,delta){
+  var cur=selVeg[id]||0;
+  var w=cur+delta;
+  if(w<0)w=0;
+  selVeg[id]=w;
+  showCart();buildMenu();bldCartFloat();
 }
 
 // ==================== ORDER ====================
