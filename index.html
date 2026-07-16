@@ -115,6 +115,39 @@ textarea{resize:vertical;min-height:56px}
 .vo-remove{width:24px;height:24px;border-radius:50%;color:var(--gray-400);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0}
 .vo-remove:hover{color:var(--red);background:var(--red-bg)}
 
+/* New veg card - horizontal layout */
+.veg-card2{background:var(--white);border-radius:var(--radius);margin:0 16px 8px;box-shadow:var(--shadow);border:1px solid var(--gray-100);padding:12px;display:flex;gap:10px;align-items:flex-start}
+.veg-img2{width:60px;height:60px;background:var(--green-bg);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;overflow:hidden}
+.veg-img2 img{width:100%;height:100%;object-fit:cover}
+.veg-info2{flex:1;min-width:0}
+.veg-name2{font-size:14px;font-weight:700;margin-bottom:1px}
+.veg-desc-row{font-size:11px;color:var(--gray-400);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.veg-price-row{font-size:11px;font-weight:600;color:var(--green);margin-bottom:5px}
+.cut-row{display:flex;align-items:center;gap:5px;margin-bottom:6px;font-size:11px;flex-wrap:wrap}
+.cut-label{color:var(--gray-600);font-weight:600;flex-shrink:0}
+.cut-opt{padding:3px 10px;border:1px solid var(--gray-200);border-radius:14px;cursor:pointer;font-size:10px;color:var(--gray-600);transition:all .15s}
+.cut-opt:hover{border-color:var(--green)}
+.cut-opt.active{background:var(--green);color:#fff;border-color:var(--green)}
+.wt-row{display:flex;align-items:center;gap:5px;font-size:11px}
+.wt-label{color:var(--gray-600);font-weight:600;flex-shrink:0}
+.wt-input{width:58px;padding:4px 2px;text-align:center;font-size:12px;font-weight:600;border:1px solid var(--gray-200);border-radius:6px}
+.wt-unit{color:var(--gray-600);font-weight:600;margin-right:2px}
+.wt-btn{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--gray-200);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--gray-600);cursor:pointer;font-size:14px;transition:all .15s;flex-shrink:0}
+.wt-btn:hover{border-color:var(--green);color:var(--green)}
+/* Cart floating bar */
+.cart-float{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--navy);color:#fff;padding:10px 16px;display:none;align-items:center;justify-content:space-between;z-index:45;gap:10px}
+.cart-float.on{display:flex}
+.cart-info{font-size:12px;font-weight:600;min-width:0}
+.cart-count{background:var(--orange);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;margin-left:4px}
+.cart-total{font-size:14px;font-weight:800;color:#ffb347;white-space:nowrap}
+.cart-btn{padding:7px 14px;background:var(--orange);color:#fff;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+/* Payment modal */
+.pay-qr-wrap{display:flex;gap:12px;justify-content:center;margin:12px 0}
+.pay-qr-item{text-align:center;flex:1;min-width:0}
+.pay-qr-item img{width:130px;height:130px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);object-fit:contain}
+.pay-qr-label{font-size:11px;font-weight:700;margin-bottom:6px}
+.pay-qr-note{font-size:10px;color:var(--gray-400);margin-top:4px}
+
 .fg{margin-bottom:14px}.fl{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px}.fl .req{color:var(--red)}
 .radios{display:flex;flex-direction:column;gap:5px}
 .radio{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--gray-100);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;font-size:13px}
@@ -233,11 +266,16 @@ hr.sep{border:none;border-top:1px solid var(--gray-100);margin:12px 0}
 
 <div class="page" id="p-done"><div class="done-wrap"><div class="done-icon"><span style="font-size:36px">✅</span></div>
   <h3 style="font-size:18px;margin-bottom:6px">下单成功！&#127881;</h3><div class="sm gray mb8" id="done-info"></div>
-  <p class="sm gray">请微信转账确认订单</p><p style="color:var(--orange);font-weight:600;font-size:13px">每晚20:00截单</p>
-    <div id="done-qr" style="margin-top:16px;display:none"></div>
-    <button class="btn btn-green mt12" style="max-width:240px;margin:12px auto 0" id="done-paid-btn" onclick="markPaid()">✅ 我已付款</button>
+  <p class="sm gray">订单已确认，晚20:00截单</p><p style="color:var(--orange);font-weight:600;font-size:13px">如有问题请联系商家</p>
   <button class="btn btn-primary mt16" style="max-width:240px;margin:16px auto 0" onclick="goPage('menu')">返回菜单</button>
 </div></div>
+
+<!-- Cart floating bar -->
+<div class="cart-float" id="cart-float">
+  <div class="cart-info">🛒购物车<span class="cart-count" id="cart-cnt">0</span></div>
+  <div class="cart-total" id="cart-sum">¥0</div>
+  <button class="cart-btn" onclick="goOrder(pk||'a')">去结算 →</button>
+</div>
 
 <div class="bottom-nav" id="btm-nav">
   <button class="nav-item active" id="bn-menu" onclick="goPage('menu')">☰菜单</button>
@@ -352,13 +390,13 @@ function defData(){return{
   veggies:JSON.parse(JSON.stringify(VEG_DEFAULTS)),
   vegWeekly:[...VEG_DEFAULTS.map(v=>v.id)],
   tutorials:JSON.parse(JSON.stringify(TUTORIAL_DEFAULTS)),
-  orders:[],customers:[],communities:JSON.parse(JSON.stringify(DEF_COMMUNITIES)),password:'888888',paymentQR:''
+  orders:[],customers:[],communities:JSON.parse(JSON.stringify(DEF_COMMUNITIES)),password:'888888',paymentQR_wx:'',paymentQR_alipay:''
 }}
 
 let D=defData();
 function save(){
   localStorage.setItem(STORAGE,JSON.stringify(D));
-  if(API_BASE){fetch(API_BASE+'/api/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cuisines:D.cuisines,dishes:D.dishes,veggies:D.veggies,communities:D.communities,orders:D.orders,customers:D.customers,settings:{password:D.password}})}).catch(function(){})}
+  if(API_BASE){fetch(API_BASE+'/api/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cuisines:D.cuisines,dishes:D.dishes,veggies:D.veggies,communities:D.communities,orders:D.orders,customers:D.customers,settings:{password:D.password,paymentQR_wx:D.paymentQR_wx||'',paymentQR_alipay:D.paymentQR_alipay||''}})}).catch(function(){})}
 }
 async function loadFromCloud(){
   if(!API_BASE) return;
@@ -370,28 +408,39 @@ async function loadFromCloud(){
     if(s.orders)D.orders=s.orders;
     if(s.customers)D.customers=s.customers;
     if(s.settings&&s.settings.password)D.password=s.settings.password;
+    if(s.settings&&s.settings.paymentQR_wx)D.paymentQR_wx=s.settings.paymentQR_wx;
+    if(s.settings&&s.settings.paymentQR_alipay)D.paymentQR_alipay=s.settings.paymentQR_alipay;
     if(s.dishes&&s.dishes.length){D.weekly=s.dishes.filter(function(d){return d.weekly}).map(function(d){return d.id});D.vegWeekly=s.veggies.filter(function(v){return v.weekly}).map(function(v){return v.id});}
     return true;
   }}catch(e){}
   return false;
 }
-(async function(){
-  var fromCloud = await loadFromCloud();
-  if(!fromCloud){
-    try{const r=localStorage.getItem(STORAGE);if(r){const s=JSON.parse(r);D={...defData(),...s};if(!D.cuisines||!D.cuisines.length)D.cuisines=[...CUISINE_DEFAULTS];if(!D.veggies||!D.veggies.length)D.veggies=JSON.parse(JSON.stringify(VEG_DEFAULTS));if(!D.vegWeekly||!D.vegWeekly.length)D.vegWeekly=[...VEG_DEFAULTS.map(function(v){return v.id})];if(!D.tutorials)D.tutorials=JSON.parse(JSON.stringify(TUTORIAL_DEFAULTS));if(!D.communities||!D.communities.length)D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));D.dishes.forEach(function(d){if(!d.cuisine)d.cuisine='家常菜';if(!d.image)d.image='';if(!d.ingredients)d.ingredients=[];})}}
-    catch(e){}
-  }
+(function(){
+  // 1. Load from localStorage instantly → page renders immediately
+  try{var r=localStorage.getItem(STORAGE);if(r){var s=JSON.parse(r);D={...defData(),...s};
+    if(!D.cuisines||!D.cuisines.length)D.cuisines=[...CUISINE_DEFAULTS];
+    if(!D.veggies||!D.veggies.length)D.veggies=JSON.parse(JSON.stringify(VEG_DEFAULTS));
+    if(!D.vegWeekly||!D.vegWeekly.length)D.vegWeekly=[...VEG_DEFAULTS.map(function(v){return v.id})];
+    if(!D.tutorials)D.tutorials=JSON.parse(JSON.stringify(TUTORIAL_DEFAULTS));
+    if(!D.communities||!D.communities.length)D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));
+    D.dishes.forEach(function(d){if(!d.cuisine)d.cuisine='家常菜';if(!d.image)d.image='';if(!d.ingredients)d.ingredients=[];});
+    if(!D.paymentQR_wx&&D.paymentQR){D.paymentQR_wx=D.paymentQR;D.paymentQR_alipay='';}
+  }}catch(e){}
   buildMenu();
   document.getElementById('ord-name').addEventListener('input',function(){oName=this.value});
   document.getElementById('ord-wx').addEventListener('input',function(){oWxName=this.value});
   document.getElementById('ord-note').addEventListener('input',function(){oNote=this.value});
   document.getElementById('ord-time').addEventListener('change',function(){oTimeSlot=this.value});
   document.getElementById('ord-room').addEventListener('change',function(){oAddr.room=this.value});
+  // 2. Background cloud sync — updates silently when done
+  loadFromCloud().then(function(ok){
+    if(ok){buildMenu();if(typeof bldCartFloat==='function')bldCartFloat();}
+  }).catch(function(){});
 })();
 
 // ==================== STATE ====================
 let cp='menu',pk='a',menuTab='dishes',isAdmin=false,at='dash';
-let sel={},selVeg={},oName='',oWxName='',oAddr={cid:'',bid:'',uid:'',room:''},oTimeSlot=TIME_SLOTS[0],oNote='';
+let sel={},selVeg={},selVegCut={},oName='',oWxName='',oAddr={cid:'',bid:'',uid:'',room:''},oTimeSlot=TIME_SLOTS[0],oNote='';
 
 // ==================== NAV ====================
 function goPage(p){
@@ -402,7 +451,8 @@ function goPage(p){
   else if(p==='order'){document.getElementById('bn-'+pk).classList.add('active');buildOrder()}
   window.scrollTo(0,0);}
 function goOrder(p){pk=p;goPage('order')}
-function goPageRaw(p){cp=p;document.querySelectorAll('#client-zone .page').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');window.scrollTo(0,0)}
+function goPageRaw(p){cp=p;document.querySelectorAll('#client-zone .page').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');window.scrollTo(0,0);
+  var cf=document.getElementById('cart-float');if(cf)cf.className='cart-float';}
 
 // ==================== HELPERS ====================
 function dishImg(d,size){if(d.image)return`<img src="${d.image}" style="width:100%;height:100%;object-fit:cover" alt="${d.name}">`;return`<span style="font-size:${size||'36px'}">${d.emoji||'🍽️'}</span>`}
@@ -448,31 +498,72 @@ function buildMenu(){
       }
     }
   } else {
-    // Vegetables
+    // Vegetables — new horizontal layout
     const vcats={};dv.forEach(v=>{if(!vcats[v.cat])vcats[v.cat]=[];vcats[v.cat].push(v)});
     for(const[cat,items]of Object.entries(vcats)){
-      html+=`<div class="sec-label">🥬${cat} · ${items.length}款</div>`;
-      items.forEach(v=>{
-        html+=`<div class="veg-card">
-          <div class="veg-img">${vegImg(v)}</div>
-          <div class="veg-info"><div class="veg-name">${v.name}</div><div class="veg-desc">${v.desc}</div><div class="veg-price">¥${(v.pricePerGram*100).toFixed(2)}/100g · ¥${(v.pricePerGram*500).toFixed(1)}/500g</div></div>
-          <div class="veg-controls" onclick="event.stopPropagation()">
-            <button class="veg-btn" onclick="adjVeg('${v.id}',-1)">−</button>
-            <div style="text-align:center"><span class="veg-w">${selVeg[v.id]||0}g</span><div class="sm gray">${v.presets.map(p=>`<span class="veg-preset ${(selVeg[v.id]||0)===p?'active':''}" onclick="event.stopPropagation();selVeg['${v.id}']=${p};buildMenu()">${p}g</span>`).join(' ')}</div></div>
-            <button class="veg-btn" onclick="adjVeg('${v.id}',1)">+</button>
-          </div></div>`;
+      html+='<div class="sec-label">🥬'+cat+' · '+items.length+'款</div>';
+      items.forEach(function(v){
+        var curWt=selVeg[v.id]||0;
+        var curCut=selVegCut[v.id]||'块状';
+        var ppg=v.pricePerGram||0.01;
+        html+='<div class="veg-card2">'
+          +'<div class="veg-img2">'+vegImg(v)+'</div>'
+          +'<div class="veg-info2">'
+            +'<div class="veg-name2">'+v.name+'</div>'
+            +'<div class="veg-desc-row">'+v.desc+'</div>'
+            +'<div class="veg-price-row">¥'+((ppg*100)).toFixed(2)+'/100g | ¥'+((ppg*500)).toFixed(1)+'/500g</div>'
+            +'<div class="cut-row" onclick="event.stopPropagation()">'
+              +'<span class="cut-label">切法：</span>'
+              +'<span class="cut-opt'+(curCut==='块状'?' active':'')+'" onclick="event.stopPropagation();selVegCut[\x27'+v.id+'\x27]=\x27块状\x27;buildMenu()">块状</span>'
+              +'<span class="cut-opt'+(curCut==='丝状'?' active':'')+'" onclick="event.stopPropagation();selVegCut[\x27'+v.id+'\x27]=\x27丝状\x27;buildMenu()">丝状</span>'
+              +'<span class="cut-opt'+(curCut==='片状'?' active':'')+'" onclick="event.stopPropagation();selVegCut[\x27'+v.id+'\x27]=\x27片状\x27;buildMenu()">片状</span>'
+            +'</div>'
+            +'<div class="wt-row" onclick="event.stopPropagation()">'
+              +'<span class="wt-label">重量：</span>'
+              +'<input type="number" class="wt-input" value="'+(curWt||'')+'" placeholder="0" min="0" step="10" onchange="setVegWt(\x27'+v.id+'\x27,this.value)" onclick="event.stopPropagation()">'
+              +'<span class="wt-unit">g</span>'
+              +'<button class="wt-btn" onclick="event.stopPropagation();adjVegWt(\x27'+v.id+'\x27,-50)">−</button>'
+              +'<button class="wt-btn" onclick="event.stopPropagation();adjVegWt(\x27'+v.id+'\x27,50)">+</button>'
+            +'</div>'
+          +'</div></div>';
       });
     }
   }
   document.getElementById('menu-area').innerHTML=html||'<div class="empty">📥<p>暂无内容</p></div>';
-  }
+  bldCartFloat();}
 
-function adjVeg(id,dir){
-  const v=D.veggies.find(x=>x.id===id);if(!v)return;
-  const cur=selVeg[id]||0;
-  if(dir>0){const n=v.presets.find(p=>p>cur);selVeg[id]=n||v.presets[v.presets.length-1]}
-  else{const rev=[...v.presets].reverse();const n=rev.find(p=>p<cur);selVeg[id]=n||0}
-  buildMenu();
+function setVegWt(id,val){
+  var w=parseInt(val)||0;
+  if(w<0)w=0;
+  selVeg[id]=w;
+  buildMenu();bldCartFloat();
+}
+function adjVegWt(id,delta){
+  var cur=selVeg[id]||0;
+  var w=cur+delta;
+  if(w<0)w=0;
+  selVeg[id]=w;
+  buildMenu();bldCartFloat();
+}
+
+// ==================== CART FLOAT ====================
+function bldCartFloat(){
+  var el=document.getElementById('cart-float');if(!el)return;
+  var dishCount=0,vegCount=0,total=0;
+  Object.keys(sel).forEach(function(id){
+    if(sel[id]&&sel[id]!=='不选'){dishCount++}
+  });
+  Object.keys(selVeg).forEach(function(id){
+    var g=selVeg[id]||0;if(g>0){vegCount++;var v=D.veggies.find(function(x){return x.id===id});if(v)total+=g*v.pricePerGram}
+  });
+  // Estimate dish total (rough)
+  Object.keys(sel).forEach(function(id){
+    if(sel[id]&&sel[id]!=='不选'){var d=D.dishes.find(function(x){return x.id===id});if(d){var pt=sel[id]||'中';var m=pt==='小'?.7:pt==='大'?1.3:1;total+=Math.round(d.price*m)}}
+  });
+  var cnt=dishCount+vegCount;
+  document.getElementById('cart-cnt').textContent=cnt;
+  document.getElementById('cart-sum').textContent='¥'+total.toFixed(1);
+  el.className='cart-float'+(cnt>0?' on':'');
 }
 
 // ==================== ORDER ====================
@@ -513,7 +604,7 @@ function buildOrder(){
   const vs=Object.entries(selVeg).filter(([k,v])=>v>0);
   if(dv.length>0){
     let vh='<div style="border-top:2px solid var(--green-bg);padding-top:8px;margin-top:8px"><div class="sec-label">🥬🥦 净菜自选</div></div>';
-    vs.forEach(([vid,g])=>{const v=D.veggies.find(x=>x.id===vid);if(!v)return;vh+=`<div class="vo-item"><div class="vo-img">${vegImg(v)}</div><div class="vo-info"><div class="vo-name">${v.name}</div><div class="vo-detail">${g}g · ¥${(v.pricePerGram*100).toFixed(2)}/100g</div></div><div class="vo-price">¥${(g*v.pricePerGram).toFixed(1)}</div><button class="vo-remove" onclick="selVeg['${vid}']=0;buildOrder()">×</button></div>`});
+    vs.forEach(function(kv){var vid=kv[0],g=kv[1];var v=D.veggies.find(function(x){return x.id===vid});if(!v)return;var cut=selVegCut[vid]||'块状';vh+='<div class="vo-item"><div class="vo-img">'+vegImg(v)+'</div><div class="vo-info"><div class="vo-name">'+v.name+'</div><div class="vo-detail">'+cut+' · '+g+'g · ¥'+((v.pricePerGram*100)).toFixed(2)+'/100g</div></div><div class="vo-price">¥'+((g*v.pricePerGram)).toFixed(1)+'</div><button class="vo-remove" onclick="selVeg[\x27'+vid+'\x27]=0;selVegCut[\x27'+vid+'\x27]=\x27\x27;buildOrder();bldCartFloat()">×</button></div>'});
     if(vs.length===0)vh+='<p class="tc sm gray" style="padding:12px">暂未选净菜，回菜单页挑选</p>';
     document.getElementById('ord-dishes').insertAdjacentHTML('beforeend',vh);
   }
@@ -533,11 +624,11 @@ function buildOrder(){
   onCommChange(false);
 
   document.getElementById('ord-name').value=oName||'';document.getElementById('ord-wx').value=oWxName||'';document.getElementById('ord-note').value=oNote||'';
-  }
+  bldCartFloat();}
 
-function tglDish(id){sel[id]=(sel[id]||'不选')==='不选'?'中':'不选';buildOrder()}
-function setP(id,p){sel[id]=p;buildOrder()}
-function resetOrder(){sel={};selVeg={};oName='';oWxName='';oTimeSlot=TIME_SLOTS[0];oAddr={cid:D.communities[0].id,bid:'',uid:'',room:''};oNote=''}
+function tglDish(id){sel[id]=(sel[id]||'不选')==='不选'?'中':'不选';buildOrder();bldCartFloat()}
+function setP(id,p){sel[id]=p;buildOrder();bldCartFloat()}
+function resetOrder(){sel={};selVeg={};selVegCut={};oName='';oWxName='';oTimeSlot=TIME_SLOTS[0];oAddr={cid:D.communities[0].id,bid:'',uid:'',room:''};oNote='';bldCartFloat()}
 
 function onCommChange(rebuild){var v=document.getElementById('ord-comm').value;oAddr.cid=v;oAddr.bid='';oAddr.uid='';oAddr.room='';
   var bld=document.getElementById('ord-bld');bld.innerHTML='<option value="">请选择楼幢</option>';
@@ -558,8 +649,8 @@ function onUnitChange(){var v=document.getElementById('ord-unit').value;oAddr.ui
 
 // ==================== SUBMIT ====================
 function submitOrder(){
-  const pkg=PKGS[pk];const wd=D.weekly||[];const dd=D.dishes.filter(d=>wd.includes(d.id));
-  const items=dd.filter(d=>sel[d.id]&&sel[d.id]!=='不选');
+  var pkg=PKGS[pk];var wd=D.weekly||[];var dd=D.dishes.filter(function(d){return wd.includes(d.id)});
+  var items=dd.filter(function(d){return sel[d.id]&&sel[d.id]!=='不选'});
   oName=document.getElementById('ord-name').value.trim();oWxName=document.getElementById('ord-wx').value.trim();oNote=document.getElementById('ord-note').value.trim();
   oTimeSlot=document.getElementById('ord-time').value;oAddr.room=document.getElementById('ord-room').value;
   if(!oName){t('请填称呼');return}
@@ -571,37 +662,73 @@ function submitOrder(){
   var addrLabel=(comm?comm.name:'')+' '+(bld?bld.name:'')+' '+(unt?unt.name:'')+' '+oAddr.room+'室';
   var deliveryTime=pkg.hasDate?oTimeSlot:'周日+周三';
 
-  let dp=0;
-  const di=items.map(d=>{const pt=sel[d.id]||'中';const m=pt==='小'?.7:pt==='大'?1.3:1;const pr=Math.round(d.price*m);dp+=pr;return{id:d.id,name:d.name,portion:pt,price:pr}});
-  let vp=0;const vi=[];
-  Object.entries(selVeg).forEach(([vid,g])=>{if(g>0){const v=D.veggies.find(x=>x.id===vid);if(v){const pr=Math.round(g*v.pricePerGram*100)/100;vp+=pr;vi.push({id:vid,name:v.name,grams:g,price:pr})}}});
-  const total=dp+vp+(pkg.fee||0);
-  const order={id:'ORD'+Date.now().toString(36).toUpperCase(),time:new Date().toLocaleString('zh-CN'),ts:Date.now(),pkg:pk,pkgName:pkg.name,pkgFee:pkg.fee,customer:oName,address:addrLabel,deliveryTime:deliveryTime,room:addrLabel,date:deliveryTime,items:di,vegItems:vi,vegPrice:vp,dishPrice:dp,total,note:oNote,status:'confirmed',paid:false};
+  var dp=0;
+  var di=items.map(function(d){var pt=sel[d.id]||'中';var m=pt==='小'?.7:pt==='大'?1.3:1;var pr=Math.round(d.price*m);dp+=pr;return{id:d.id,name:d.name,portion:pt,price:pr}});
+  var vp=0;var vi=[];
+  Object.keys(selVeg).forEach(function(vid){var g=selVeg[vid];if(g>0){var v=D.veggies.find(function(x){return x.id===vid});if(v){var pr=Math.round(g*v.pricePerGram*100)/100;vp+=pr;vi.push({id:vid,name:v.name,grams:g,price:pr,cut:selVegCut[vid]||'块状'})}}});
+  var total=dp+vp+(pkg.fee||0);
+  var order={id:'ORD'+Date.now().toString(36).toUpperCase(),time:new Date().toLocaleString('zh-CN'),ts:Date.now(),pkg:pk,pkgName:pkg.name,pkgFee:pkg.fee,customer:oName,address:addrLabel,deliveryTime:deliveryTime,room:addrLabel,date:deliveryTime,items:di,vegItems:vi,vegPrice:vp,dishPrice:dp,total:total,note:oNote,status:'confirmed',paid:false};
   D.orders.unshift(order);
 
-  let cust=D.customers.find(function(c){return c.address===addrLabel&&c.name===oName});
+  // Upsert customer
+  var cust=D.customers.find(function(c){return c.address===addrLabel&&c.name===oName});
   if(!cust){cust={id:'C'+Date.now().toString(36),name:oName,wxName:oWxName||'',address:addrLabel,preferences:'',firstOrder:order.time,orderCount:0,notes:''};D.customers.push(cust)}
-  cust.orderCount++;if(oWxName) cust.wxName=oWxName;
+  cust.orderCount++;if(oWxName)cust.wxName=oWxName;
   save();
 
-  _lastOrderId=order.id;document.getElementById('done-info').innerHTML=pkg.emoji+' '+pkg.name+'<br/>'+di.map(function(i){return i.name+'('+i.portion+'份)'}).join('、')+(vi.length>0?'<br/>+净菜:'+vi.map(function(i){return i.name+'('+i.grams+'g)'}).join('、'):'')+'<br/><b>菜品¥'+dp+(vp>0?'+净菜¥'+vp:'')+'+服务费¥'+pkg.fee+'=¥'+total+'</b><br/>📮 '+addrLabel+'<br/>🕐 '+deliveryTime;
-  goPageRaw('done');
-  document.getElementById('done-paid-btn').disabled=false;
-  document.getElementById('done-paid-btn').textContent='✅ 我已付款';
-  var qrDiv=document.getElementById('done-qr');
-  if(D.paymentQR){qrDiv.style.display='block';qrDiv.innerHTML='<div style="font-size:13px;font-weight:700;margin-bottom:8px">📱 微信扫码付款 ¥'+total+'</div><img src="'+D.paymentQR+'" style="width:200px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)" loading="lazy"><div class="sm gray mt8">请转账后点击下方按钮</div>'}else{qrDiv.style.display='none'}
-  resetOrder();
+  // Store last order for payment
+  _lastOrderId=order.id;_lastOrderSummary={di:di,vi:vi,dp:dp,vp:vp,fee:pkg.fee,total:total,addr:addrLabel,dt:deliveryTime,pkgEmoji:pkg.emoji,pkgName:pkg.name};
+
+  // Show payment modal
+  showPayModal(total);
 }
 
-// ==================== TUTORIAL ====================
-let _lastOrderId='';
-function markPaid(){
+// ==================== PAYMENT MODAL ====================
+var _lastOrderId='';var _lastOrderSummary=null;
+function showPayModal(total){
+  var wxQR=D.paymentQR_wx||'';var aliQR=D.paymentQR_alipay||'';
+  var qrHtml='';
+  if(wxQR||aliQR){
+    qrHtml='<div class="pay-qr-wrap">';
+    if(wxQR)qrHtml+='<div class="pay-qr-item"><div class="pay-qr-label">💚 微信支付</div><img src="'+wxQR+'" alt="微信收款码"><div class="pay-qr-note">打开微信扫一扫</div></div>';
+    if(aliQR)qrHtml+='<div class="pay-qr-item"><div class="pay-qr-label">💙 支付宝</div><img src="'+aliQR+'" alt="支付宝收款码"><div class="pay-qr-note">打开支付宝扫一扫</div></div>';
+    qrHtml+='</div>';
+  }else{
+    qrHtml='<p class="tc sm gray">请联系商家获取收款码</p>';
+  }
+  document.body.insertAdjacentHTML('beforeend','<div class="modal-overlay" id="pay-modal" onclick="if(event.target===this)this.remove()"><div class="modal-box" style="max-width:400px;text-align:center">'
+    +'<button class="modal-close" onclick="document.getElementById(\x27pay-modal\x27).remove()">✕</button>'
+    +'<h3 style="font-size:18px;margin-bottom:4px">💳 扫码支付</h3>'
+    +'<p class="sm gray">请使用微信或支付宝扫码转账</p>'
+    +'<div style="font-size:28px;font-weight:800;color:var(--orange);margin:8px 0">¥'+total.toFixed(1)+'</div>'
+    +qrHtml
+    +'<p class="sm" style="color:var(--amber);margin-top:8px">⚠️ 转账时请备注您的称呼</p>'
+    +'<button class="btn btn-green mt12" style="max-width:240px;margin:12px auto 0" id="pay-done-btn" onclick="confirmPay()">✅ 我已完成付款</button>'
+    +'<button class="btn btn-secondary btn-sm mt8" style="max-width:240px;margin:0 auto" onclick="document.getElementById(\x27pay-modal\x27).remove()">暂不付款，稍后处理</button>'
+    +'</div></div>');
+}
+function confirmPay(){
   if(_lastOrderId){
     var o=D.orders.find(function(x){return x.id===_lastOrderId});
     if(o){o.paid=true;save()}
-    document.getElementById('done-paid-btn').textContent='已标记付款 ✓';
-    document.getElementById('done-paid-btn').disabled=true;t('已标记为已付款');
   }
+  // Close modal
+  var pm=document.getElementById('pay-modal');if(pm)pm.remove();
+  // Clear cart
+  resetOrder();
+  // Show success page
+  if(_lastOrderSummary){
+    var s=_lastOrderSummary;
+    document.getElementById('done-info').innerHTML=s.pkgEmoji+' '+s.pkgName
+      +'<br/>'+s.di.map(function(i){return i.name+'('+i.portion+'份)'}).join('、')
+      +(s.vi.length>0?'<br/>+净菜:'+s.vi.map(function(i){return i.name+'('+i.cut+'·'+i.grams+'g)'}).join('、'):'')
+      +'<br/><b>菜品¥'+s.dp+(s.vp>0?'+净菜¥'+s.vp:'')+'+服务费¥'+s.fee+'=¥'+s.total+'</b><br/>📮 '+s.addr+'<br/>🕐 '+s.dt;
+    _lastOrderSummary=null;
+  }
+  goPageRaw('done');
+  document.getElementById('done-qr').style.display='none';
+  document.getElementById('done-paid-btn').style.display='none';
+  t('已确认付款 ✅');
 }
 function showTutorial(did){
   const d=D.dishes.find(x=>x.id===did),t=D.tutorials[did];if(!d||!t)return;
@@ -622,7 +749,7 @@ function showTutorial(did){
 function showGate(){document.getElementById('gate').style.display='block';document.getElementById('gate-pw').value='';setTimeout(()=>document.getElementById('gate-pw').focus(),100)}
 function hideGate(){document.getElementById('gate').style.display='none'}
 function checkPw(){if(document.getElementById('gate-pw').value.trim()===D.password)enterAdmin();else t('密码错误')}
-function enterAdmin(){isAdmin=true;document.getElementById('gate').style.display='none';document.getElementById('client-zone').style.display='none';document.getElementById('btm-nav').style.display='none';document.getElementById('client-top').style.display='none';document.getElementById('admin-top').style.display='flex';document.getElementById('admin-zone').style.display='block';switchAT('dash');}
+function enterAdmin(){isAdmin=true;document.getElementById('gate').style.display='none';document.getElementById('client-zone').style.display='none';document.getElementById('btm-nav').style.display='none';document.getElementById('client-top').style.display='none';var cf=document.getElementById('cart-float');if(cf)cf.className='cart-float';document.getElementById('admin-top').style.display='flex';document.getElementById('admin-zone').style.display='block';switchAT('dash');}
 function exitAdmin(){isAdmin=false;document.getElementById('admin-zone').style.display='none';document.getElementById('admin-top').style.display='none';document.getElementById('client-top').style.display='flex';document.getElementById('client-zone').style.display='block';document.getElementById('btm-nav').style.display='flex';goPage('menu');}
 function switchAT(t){at=t;document.querySelectorAll('#admin-zone .admin-page').forEach(p=>p.classList.remove('active'));document.getElementById('a-'+t).classList.add('active');document.querySelectorAll('#adm-nav .adm-tab').forEach(b=>b.classList.remove('active'));document.querySelector(`#adm-nav [data-t="${t}"]`).classList.add('active');if(t==='dash')bDash();else if(t==='orders')bOrders();else if(t==='purchase')bPurchase();else if(t==='dishes')bDishes();else if(t==='veggies')bVeggies();else if(t==='cuisines')bCuisines();else if(t==='communities')bCommunities();else if(t==='finance')bFinance();else if(t==='customers')bCustomers();}
 document.addEventListener('click',function(e){const tb=e.target.closest('#adm-nav .adm-tab');if(tb)switchAT(tb.dataset.t)});
@@ -644,7 +771,7 @@ function bDash(){
 function bOrders(){
   document.getElementById('a-orders').innerHTML=`<div class="px16" style="padding-top:12px"><div class="card"><div class="card-header">📋全部订单 (${D.orders.length})</div>${D.orders.map(o=>`<div style="padding:10px 0;border-bottom:1px solid var(--gray-50)">
     <div class="fx mb8"><div><span class="badge bd-${o.pkg==='a'?'a':o.pkg==='b'?'b':'c'}">${o.pkgName}</span> <b style="font-size:13px">${o.customer}</b> <span class="sm gray">${o.room}</span></div><b style="color:var(--orange)">¥${o.total}</b></div>
-    <div class="sm gray">${o.items.map(i=>i.name+'('+(i.portion||'中')+'份)').join('、')}${(o.vegItems||[]).length>0?'<br/>+净菜:'+o.vegItems.map(v=>v.name+'('+v.grams+'g)').join('、'):''}</div>
+    <div class="sm gray">${o.items.map(i=>i.name+'('+(i.portion||'中')+'份)').join('、')}${(o.vegItems||[]).length>0?'<br/>+净菜:'+o.vegItems.map(function(v){return v.name+'('+(v.cut||'')+'·'+v.grams+'g)'}).join('、'):''}</div>
     <div class="fx mt8"><span class="sm gray">${o.time} · ${o.date}${o.note?' · '+o.note:''}</span><div style="display:flex;gap:4px"><select onchange="updStat('${o.id}',this.value)" style="font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid var(--gray-200)"><option value="confirmed" ${o.status==='confirmed'?'selected':''}>已确认</option><option value="preparing" ${o.status==='preparing'?'selected':''}>备货中</option><option value="delivering" ${o.status==='delivering'?'selected':''}>配送中</option><option value="done" ${o.status==='done'?'selected':''}>已完成</option></select><button class="btn btn-xs ${o.paid?'btn-green':'btn-secondary'}" onclick="togglePaid('${o.id}')" style="font-size:10px;padding:4px 6px">${o.paid?'💰已付':'💳未付'}</button><button class="btn btn-xs btn-secondary" onclick="delOrd('${o.id}')">删除</button></div></div></div>`).join('')||'<div class="empty">📥<p>暂无</p></div>'}</div></div>`;
 }
 function togglePaid(id){var o=D.orders.find(function(x){return x.id===id});if(o){o.paid=!o.paid;save();t(o.paid?"已付款":"未付款");bOrders()}}
@@ -802,10 +929,19 @@ function bDishes(){
     <button class="btn btn-primary mt8" onclick="addDish()">＋添加</button></div>`;
 
   // Settings
-  h+=`<div class="card mt12"><div class="card-header">⚙️设置</div>
-    <div class="fg"><label class="fl">管理密码</label><div style="display:flex;gap:8px"><input id="set-pw" value="${D.password}" style="flex:1"><button class="btn btn-primary btn-sm" onclick="D.password=document.getElementById('set-pw').value.trim();save();t('已更新')">保存</button></div></div><div class="fg"><label class="fl">💳 收款码图片</label><label class="img-upload-box ${D.paymentQR?'has-img':''}" id="qr-upload" style="width:160px;height:160px">${D.paymentQR?'<img src="'+D.paymentQR+'" style="width:100%;height:100%;object-fit:cover">':'<span style="font-size:32px;color:var(--gray-400)">+</span>'}<input type="file" accept="image/*" onchange="uploadQR(this)"></label><p class="sm gray mt8">上传微信收款码，客户下单后展示</p></div>
-            <div class="fg"><p class="sm" style="color:var(--orange)">🏘️ 小区/楼幢/单元/室号在「🏠地址」管理页面编辑</p></div>
-    <button class="btn btn-danger btn-sm mt8" onclick="if(confirm('重置全部数据？不可恢复！')){localStorage.removeItem('${STORAGE}');location.reload()}">⚠️ 重置全部</button></div></div>`;
+  // Settings with dual QR
+  var wxQrBox=D.paymentQR_wx?'has-img':'',aliQrBox=D.paymentQR_alipay?'has-img':'';
+  var wxQrPrev=D.paymentQR_wx?'<img src="'+D.paymentQR_wx+'" style="width:100%;height:100%;object-fit:cover">':'<span style="font-size:28px;color:var(--gray-400)">+</span>';
+  var aliQrPrev=D.paymentQR_alipay?'<img src="'+D.paymentQR_alipay+'" style="width:100%;height:100%;object-fit:cover">':'<span style="font-size:28px;color:var(--gray-400)">+</span>';
+  h+='<div class="card mt12"><div class="card-header">⚙️设置</div>'
+    +'<div class="fg"><label class="fl">管理密码</label><div style="display:flex;gap:8px"><input id="set-pw" value="'+D.password+'" style="flex:1"><button class="btn btn-primary btn-sm" onclick="D.password=document.getElementById(\x27set-pw\x27).value.trim();save();t(\x27已更新\x27)">保存</button></div></div>'
+    +'<div style="display:flex;gap:10px;margin-top:12px">'
+      +'<div class="fg" style="flex:1"><label class="fl">💚 微信收款码</label><label class="img-upload-box '+wxQrBox+'" id="qr-wx-upload" style="width:130px;height:130px">'+wxQrPrev+'<input type="file" accept="image/*" onchange="uploadQRWx(this)"></label></div>'
+      +'<div class="fg" style="flex:1"><label class="fl">💙 支付宝收款码</label><label class="img-upload-box '+aliQrBox+'" id="qr-ali-upload" style="width:130px;height:130px">'+aliQrPrev+'<input type="file" accept="image/*" onchange="uploadQRAli(this)"></label></div>'
+    +'</div>'
+    +'<p class="sm gray mt8">上传微信和支付宝收款码，客户下单后双码同屏展示</p></div>'
+    +'<div class="fg"><p class="sm" style="color:var(--orange)">🏘️ 小区/楼幢/单元/室号在「🏠地址」管理页面编辑</p></div>'
+    +'<button class="btn btn-danger btn-sm mt8" onclick="if(confirm(\x27重置全部数据？不可恢复！\x27)){localStorage.removeItem(\x27'+STORAGE+'\x27);location.reload()}">⚠️ 重置全部</button></div></div>';
 
   document.getElementById('a-dishes').innerHTML=h;
   window._newDishImgData='';
@@ -917,10 +1053,15 @@ function addCuisine(){const nm=document.getElementById('nc-name').value.trim();i
 function editCuisine(i,old){const nm=prompt('新名称',old);if(!nm||nm===old)return;D.dishes.forEach(d=>{if(d.cuisine===old)d.cuisine=nm});D.cuisines[i]=nm;save();bCuisines();t('已更新')}
 function delCuisine(i,name){if(D.cuisines.length<=1){t('至少保留一个菜系');return};if(!confirm('删除「'+name+'」？该菜系下的菜品将归入「家常菜」'))return;D.dishes.forEach(d=>{if(d.cuisine===name)d.cuisine='家常菜'});D.cuisines.splice(i,1);if(!D.cuisines.includes('家常菜'))D.cuisines.push('家常菜');save();bCuisines();t('已删除')}
 
-function uploadQR(fi){
+function uploadQRWx(fi){
   var f=fi.files[0];if(!f)return;var r=new FileReader();
-  r.onload=function(e){var img=new Image();img.onload=function(){var cv=document.createElement('canvas');var mw=800;var w=img.width,h=img.height;if(w>mw){h=h*(mw/w);w=mw}cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);D.paymentQR=cv.toDataURL('image/jpeg',0.6);save();
-    var box=document.getElementById('qr-upload');if(box){box.classList.add('has-img');box.innerHTML='<img src="'+D.paymentQR+'" style="width:100%;height:100%;object-fit:cover"><input type="file" accept="image/*" onchange="uploadQR(this)">'}t('收款码已上传')};img.src=e.target.result};r.readAsDataURL(f);
+  r.onload=function(e){var img=new Image();img.onload=function(){var cv=document.createElement('canvas');var mw=800;var w=img.width,h=img.height;if(w>mw){h=h*(mw/w);w=mw}cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);D.paymentQR_wx=cv.toDataURL('image/jpeg',0.6);save();
+    var box=document.getElementById('qr-wx-upload');if(box){box.classList.add('has-img');box.innerHTML='<img src="'+D.paymentQR_wx+'" style="width:100%;height:100%;object-fit:cover"><input type="file" accept="image/*" onchange="uploadQRWx(this)">'}t('微信收款码已上传')};img.src=e.target.result};r.readAsDataURL(f);
+}
+function uploadQRAli(fi){
+  var f=fi.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(e){var img=new Image();img.onload=function(){var cv=document.createElement('canvas');var mw=800;var w=img.width,h=img.height;if(w>mw){h=h*(mw/w);w=mw}cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);D.paymentQR_alipay=cv.toDataURL('image/jpeg',0.6);save();
+    var box=document.getElementById('qr-ali-upload');if(box){box.classList.add('has-img');box.innerHTML='<img src="'+D.paymentQR_alipay+'" style="width:100%;height:100%;object-fit:cover"><input type="file" accept="image/*" onchange="uploadQRAli(this)">'}t('支付宝收款码已上传')};img.src=e.target.result};r.readAsDataURL(f);
 }
 
 // ==================== COMMUNITIES ADMIN ====================
