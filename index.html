@@ -1073,7 +1073,7 @@ function bCommunities(){
     c.buildings.forEach(function(b){
       h+='<div style="margin-left:12px;padding:8px 0;border-bottom:1px solid var(--gray-50)"><div class="fx"><b>'+b.name+'</b><div style="display:flex;gap:4px"><button class="btn btn-xs btn-secondary" onclick="editBldName(\x27'+c.id+'\x27,\x27'+b.id+'\x27)">重命名</button><button class="btn btn-xs btn-danger" onclick="delBld(\x27'+c.id+'\x27,\x27'+b.id+'\x27)">删除</button></div></div>';
       b.units.forEach(function(u){
-        h+='<div style="margin-left:20px;padding:4px 0;font-size:12px"><div class="fx">'+u.name+' <span class="sm gray">室号: '+u.rooms.join('\xff0c')+'</span><div style="display:flex;gap:4px"><button class="btn btn-xs btn-secondary" onclick="editUnit(\x27'+c.id+'\x27,\x27'+b.id+'\x27,\x27'+u.id+'\x27)">编辑</button><button class="btn btn-xs btn-danger" onclick="delUnit(\x27'+c.id+'\x27,\x27'+b.id+'\x27,\x27'+u.id+'\x27)">删除</button></div></div></div>';
+        h+='<div style="margin-left:20px;padding:4px 0;font-size:12px"><div class="fx">'+u.name+' <span class="sm gray">室号: '+u.rooms.join('，')+'</span><div style="display:flex;gap:4px"><button class="btn btn-xs btn-secondary" onclick="editUnit(\x27'+c.id+'\x27,\x27'+b.id+'\x27,\x27'+u.id+'\x27)">编辑</button><button class="btn btn-xs btn-danger" onclick="delUnit(\x27'+c.id+'\x27,\x27'+b.id+'\x27,\x27'+u.id+'\x27)">删除</button></div></div></div>';
       });
       h+='<button class="btn btn-xs btn-outline mt8" onclick="addUnit(\x27'+c.id+'\x27,\x27'+b.id+'\x27)" style="margin-left:20px">+ 添加单元</button></div>';
     });
