@@ -405,8 +405,7 @@ async function loadFromCloud(){
     if(s.dishes&&s.dishes.length){D.dishes=s.dishes;D.dishes.forEach(d=>{if(!d.cuisine)d.cuisine='家常菜';if(!d.image)d.image='';if(!d.ingredients)d.ingredients=[]});}
     if(s.veggies&&s.veggies.length)D.veggies=s.veggies;
     if(s.communities&&s.communities.length){
-      var firstName=s.communities[0]&&s.communities[0].name;
-      var isValid=firstName&&(firstName.indexOf('徐阳')>=0||firstName.indexOf('众泾')>=0||(firstName.charCodeAt(0)>0x4e00&&firstName.charCodeAt(0)<0x9fff));
+      var isValid=s.communities[0]&&s.communities[0].name==='徐阳花园小区';
       D.communities=isValid?s.communities:JSON.parse(JSON.stringify(DEF_COMMUNITIES));
       if(!isValid){save();}
     }
@@ -430,7 +429,7 @@ let sel={},selVeg={},selVegCut={},oName='',oWxName='',oAddr={cid:'',bid:'',uid:'
     if(!D.veggies||!D.veggies.length)D.veggies=JSON.parse(JSON.stringify(VEG_DEFAULTS));
     if(!D.vegWeekly||!D.vegWeekly.length)D.vegWeekly=[...VEG_DEFAULTS.map(function(v){return v.id})];
     if(!D.tutorials)D.tutorials=JSON.parse(JSON.stringify(TUTORIAL_DEFAULTS));
-    if(!D.communities||!D.communities.length){D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));}else{var cn=D.communities[0]&&D.communities[0].name;if(cn&&cn.charCodeAt(0)<0x4e00){D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));save();}}
+    if(!D.communities||!D.communities.length){D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));}else{var cn=D.communities[0]&&D.communities[0].name;if(cn!=='徐阳花园小区'){D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));save();}}
     D.dishes.forEach(function(d){if(!d.cuisine)d.cuisine='家常菜';if(!d.image)d.image='';if(!d.ingredients)d.ingredients=[];});
     if(!D.paymentQR_wx&&D.paymentQR){D.paymentQR_wx=D.paymentQR;D.paymentQR_alipay='';}
   }}catch(e){}
