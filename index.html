@@ -296,7 +296,7 @@ hr.sep{border:none;border-top:1px solid var(--gray-100);margin:12px 0}
 <div class="cart-float" id="cart-float">
   <div class="cart-info">🛒购物车<span class="cart-count" id="cart-cnt">0</span></div>
   <div class="cart-total" id="cart-sum">¥0</div>
-  <button class="cart-btn" onclick="goOrder(pk||'a')">去结算 →</button>
+  <button class="cart-btn" onclick="event.stopPropagation();goOrder(pk||'a')">去结算 →</button>
 </div>
 
 <div class="bottom-nav" id="btm-nav">
