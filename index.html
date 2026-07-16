@@ -275,10 +275,7 @@ hr.sep{border:none;border-top:1px solid var(--gray-100);margin:12px 0}
 <script>
 // ==================== DATA MODEL ====================
 const STORAGE='xk3_data';
-<<<<<<< HEAD
-const API_BASE = window.location.hostname==='localhost' ? '' : 'https://YOUR_WORKER.workers.dev';
-=======
->>>>>>> 23c56d8f6bd479babc9c66b940836ecc39ea5829
+const API_BASE = window.location.hostname==='localhost' ? '' : 'https://xiaban-kitchen-api.zesgoole.workers.dev';
 
 const CUISINE_DEFAULTS = ['川菜','湘菜','粤菜','鲁菜','苏菜','浙菜','闽菜','家常菜'];
 
@@ -357,7 +354,6 @@ function defData(){return{
 }}
 
 let D=defData();
-<<<<<<< HEAD
 function save(){
   localStorage.setItem(STORAGE,JSON.stringify(D));
   if(API_BASE){fetch(API_BASE+'/api/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cuisines:D.cuisines,dishes:D.dishes,veggies:D.veggies,communities:D.communities,orders:D.orders,customers:D.customers,settings:{password:D.password}})}).catch(function(){})}
@@ -390,10 +386,6 @@ async function loadFromCloud(){
   document.getElementById('ord-time').addEventListener('change',function(){oTimeSlot=this.value});
   document.getElementById('ord-room').addEventListener('change',function(){oAddr.room=this.value});
 })();
-=======
-(function(){try{const r=localStorage.getItem(STORAGE);if(r){const s=JSON.parse(r);D={...defData(),...s};if(!D.cuisines)D.cuisines=[...CUISINE_DEFAULTS];if(!D.veggies)D.veggies=JSON.parse(JSON.stringify(VEG_DEFAULTS));if(!D.vegWeekly)D.vegWeekly=[...VEG_DEFAULTS.map(v=>v.id)];if(!D.tutorials)D.tutorials=JSON.parse(JSON.stringify(TUTORIAL_DEFAULTS));if(!D.communities||!D.communities.length)D.communities=JSON.parse(JSON.stringify(DEF_COMMUNITIES));D.dishes.forEach(d=>{if(!d.cuisine)d.cuisine='家常菜';if(!d.image)d.image='';if(!d.ingredients)d.ingredients=[];if(d.portions&&!d.portions.小.label){['小','中','大'].forEach(k=>{if(d.portions[k])d.portions[k].label=k+'份'});}});save()}}catch(e){}})();
-function save(){localStorage.setItem(STORAGE,JSON.stringify(D))}
->>>>>>> 23c56d8f6bd479babc9c66b940836ecc39ea5829
 
 // ==================== STATE ====================
 let cp='menu',pk='a',menuTab='dishes',isAdmin=false,at='dash';
@@ -973,16 +965,6 @@ function bCustomers(){
 // ==================== TOAST ====================
 function t(msg){const ex=document.querySelector('.toast');if(ex)ex.remove();const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2500)}
 
-<<<<<<< HEAD
-=======
-// ==================== INIT ====================
-buildMenu();
-document.getElementById('ord-name').addEventListener('input',function(){oName=this.value});
-document.getElementById('ord-wx').addEventListener('input',function(){oWxName=this.value});
-document.getElementById('ord-note').addEventListener('input',function(){oNote=this.value});
-document.getElementById('ord-time').addEventListener('change',function(){oTimeSlot=this.value});
-document.getElementById('ord-room').addEventListener('change',function(){oAddr.room=this.value});
->>>>>>> 23c56d8f6bd479babc9c66b940836ecc39ea5829
 </script>
 </body>
 </html>
