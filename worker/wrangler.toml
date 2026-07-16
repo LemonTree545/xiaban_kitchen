@@ -1,0 +1,11 @@
+name = "xiaban-kitchen-api"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "xiaban-kitchen-db"
+database_id = "CREATE_LATER"
+
+[env.production]
+vars = { ENV = "production" }
