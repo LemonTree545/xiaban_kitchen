@@ -234,6 +234,8 @@ hr.sep{border:none;border-top:1px solid var(--gray-100);margin:12px 0}
 <div class="page" id="p-done"><div class="done-wrap"><div class="done-icon"><span style="font-size:36px">✅</span></div>
   <h3 style="font-size:18px;margin-bottom:6px">下单成功！&#127881;</h3><div class="sm gray mb8" id="done-info"></div>
   <p class="sm gray">请微信转账确认订单</p><p style="color:var(--orange);font-weight:600;font-size:13px">每晚20:00截单</p>
+    <div id="done-qr" style="margin-top:16px;display:none"></div>
+    <button class="btn btn-green mt12" style="max-width:240px;margin:12px auto 0" id="done-paid-btn" onclick="markPaid()">✅ 我已付款</button>
   <button class="btn btn-primary mt16" style="max-width:240px;margin:16px auto 0" onclick="goPage('menu')">返回菜单</button>
 </div></div>
 
@@ -350,7 +352,7 @@ function defData(){return{
   veggies:JSON.parse(JSON.stringify(VEG_DEFAULTS)),
   vegWeekly:[...VEG_DEFAULTS.map(v=>v.id)],
   tutorials:JSON.parse(JSON.stringify(TUTORIAL_DEFAULTS)),
-  orders:[],customers:[],communities:JSON.parse(JSON.stringify(DEF_COMMUNITIES)),password:'888888'
+  orders:[],customers:[],communities:JSON.parse(JSON.stringify(DEF_COMMUNITIES)),password:'888888',paymentQR:''
 }}
 
 let D=defData();
@@ -574,7 +576,7 @@ function submitOrder(){
   let vp=0;const vi=[];
   Object.entries(selVeg).forEach(([vid,g])=>{if(g>0){const v=D.veggies.find(x=>x.id===vid);if(v){const pr=Math.round(g*v.pricePerGram*100)/100;vp+=pr;vi.push({id:vid,name:v.name,grams:g,price:pr})}}});
   const total=dp+vp+(pkg.fee||0);
-  const order={id:'ORD'+Date.now().toString(36).toUpperCase(),time:new Date().toLocaleString('zh-CN'),ts:Date.now(),pkg:pk,pkgName:pkg.name,pkgFee:pkg.fee,customer:oName,address:addrLabel,deliveryTime:deliveryTime,room:addrLabel,date:deliveryTime,items:di,vegItems:vi,vegPrice:vp,dishPrice:dp,total,note:oNote,status:'confirmed'};
+  const order={id:'ORD'+Date.now().toString(36).toUpperCase(),time:new Date().toLocaleString('zh-CN'),ts:Date.now(),pkg:pk,pkgName:pkg.name,pkgFee:pkg.fee,customer:oName,address:addrLabel,deliveryTime:deliveryTime,room:addrLabel,date:deliveryTime,items:di,vegItems:vi,vegPrice:vp,dishPrice:dp,total,note:oNote,status:'confirmed',paid:false};
   D.orders.unshift(order);
 
   let cust=D.customers.find(function(c){return c.address===addrLabel&&c.name===oName});
@@ -582,11 +584,25 @@ function submitOrder(){
   cust.orderCount++;if(oWxName) cust.wxName=oWxName;
   save();
 
-  document.getElementById('done-info').innerHTML=pkg.emoji+' '+pkg.name+'<br/>'+di.map(function(i){return i.name+'('+i.portion+'份)'}).join('、')+(vi.length>0?'<br/>+净菜:'+vi.map(function(i){return i.name+'('+i.grams+'g)'}).join('、'):'')+'<br/><b>菜品¥'+dp+(vp>0?'+净菜¥'+vp:'')+'+服务费¥'+pkg.fee+'=¥'+total+'</b><br/>📮 '+addrLabel+'<br/>🕐 '+deliveryTime;
-  goPageRaw('done');resetOrder();
+  _lastOrderId=order.id;document.getElementById('done-info').innerHTML=pkg.emoji+' '+pkg.name+'<br/>'+di.map(function(i){return i.name+'('+i.portion+'份)'}).join('、')+(vi.length>0?'<br/>+净菜:'+vi.map(function(i){return i.name+'('+i.grams+'g)'}).join('、'):'')+'<br/><b>菜品¥'+dp+(vp>0?'+净菜¥'+vp:'')+'+服务费¥'+pkg.fee+'=¥'+total+'</b><br/>📮 '+addrLabel+'<br/>🕐 '+deliveryTime;
+  goPageRaw('done');
+  document.getElementById('done-paid-btn').disabled=false;
+  document.getElementById('done-paid-btn').textContent='✅ 我已付款';
+  var qrDiv=document.getElementById('done-qr');
+  if(D.paymentQR){qrDiv.style.display='block';qrDiv.innerHTML='<div style="font-size:13px;font-weight:700;margin-bottom:8px">📱 微信扫码付款 ¥'+total+'</div><img src="'+D.paymentQR+'" style="width:200px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)" loading="lazy"><div class="sm gray mt8">请转账后点击下方按钮</div>'}else{qrDiv.style.display='none'}
+  resetOrder();
 }
 
 // ==================== TUTORIAL ====================
+let _lastOrderId='';
+function markPaid(){
+  if(_lastOrderId){
+    var o=D.orders.find(function(x){return x.id===_lastOrderId});
+    if(o){o.paid=true;save()}
+    document.getElementById('done-paid-btn').textContent='已标记付款 ✓';
+    document.getElementById('done-paid-btn').disabled=true;t('已标记为已付款');
+  }
+}
 function showTutorial(did){
   const d=D.dishes.find(x=>x.id===did),t=D.tutorials[did];if(!d||!t)return;
   const dt=t.difficulty==='简单'?'tag-diff-easy':'tag-diff-med';
@@ -615,12 +631,12 @@ function bDash(){
   const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
   const td=D.orders.filter(o=>new Date(o.ts).getTime()>=today);
   const mo=D.orders.filter(o=>{const d=new Date(o.ts);return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()});
-  const pn=D.orders.filter(o=>o.status==='confirmed'||o.status==='preparing');
+  const pn=D.orders.filter(function(o){return o.status==='confirmed'||o.status==='preparing'});const unpaid=D.orders.filter(function(o){return !o.paid}).length;
   document.getElementById('a-dash').innerHTML=`<div class="px16" style="padding-top:12px"><div class="stats">
     <div class="stat"><div class="stat-l">📋 今日</div><div class="stat-v">${td.length}</div><div class="stat-s">单</div></div>
     <div class="stat"><div class="stat-l">💰 本月服务费</div><div class="stat-v">¥${mo.reduce((s,o)=>s+(o.pkgFee||0),0)}</div><div class="stat-s">${mo.length}单</div></div>
     <div class="stat"><div class="stat-l">👥 客户</div><div class="stat-v">${D.customers.length}</div><div class="stat-s">人</div></div>
-    <div class="stat"><div class="stat-l">📦 待处理</div><div class="stat-v">${pn.length}</div><div class="stat-s">单</div></div>
+    <div class="stat"><div class="stat-l">📦 待处理</div><div class="stat-v">${pn.length}</div><div class="stat-s">单</div><div class="stat"><div class="stat-l">💳 未付款</div><div class="stat-v">${unpaid}</div><div class="stat-s">单</div></div></div>
   </div>
   <div class="card"><div class="card-header">⏰最近订单</div>${D.orders.slice(0,8).map(o=>`<div style="padding:8px 0;border-bottom:1px solid var(--gray-50);display:flex;justify-content:space-between"><div><span class="badge bd-${o.pkg==='a'?'a':o.pkg==='b'?'b':'c'}">${o.pkgName}</span> <span style="font-size:12px">${o.customer}·${o.room}</span></div><div style="text-align:right"><b style="color:var(--orange)">¥${o.total}</b><div class="sm gray">${o.date}</div></div></div>`).join('')||'<div class="empty">📥<p>暂无</p></div>'}</div></div>`;
 }
@@ -629,8 +645,9 @@ function bOrders(){
   document.getElementById('a-orders').innerHTML=`<div class="px16" style="padding-top:12px"><div class="card"><div class="card-header">📋全部订单 (${D.orders.length})</div>${D.orders.map(o=>`<div style="padding:10px 0;border-bottom:1px solid var(--gray-50)">
     <div class="fx mb8"><div><span class="badge bd-${o.pkg==='a'?'a':o.pkg==='b'?'b':'c'}">${o.pkgName}</span> <b style="font-size:13px">${o.customer}</b> <span class="sm gray">${o.room}</span></div><b style="color:var(--orange)">¥${o.total}</b></div>
     <div class="sm gray">${o.items.map(i=>i.name+'('+(i.portion||'中')+'份)').join('、')}${(o.vegItems||[]).length>0?'<br/>+净菜:'+o.vegItems.map(v=>v.name+'('+v.grams+'g)').join('、'):''}</div>
-    <div class="fx mt8"><span class="sm gray">${o.time} · ${o.date}${o.note?' · '+o.note:''}</span><div style="display:flex;gap:4px"><select onchange="updStat('${o.id}',this.value)" style="font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid var(--gray-200)"><option value="confirmed" ${o.status==='confirmed'?'selected':''}>已确认</option><option value="preparing" ${o.status==='preparing'?'selected':''}>备货中</option><option value="delivering" ${o.status==='delivering'?'selected':''}>配送中</option><option value="done" ${o.status==='done'?'selected':''}>已完成</option></select><button class="btn btn-xs btn-secondary" onclick="delOrd('${o.id}')">删除</button></div></div></div>`).join('')||'<div class="empty">📥<p>暂无</p></div>'}</div></div>`;
+    <div class="fx mt8"><span class="sm gray">${o.time} · ${o.date}${o.note?' · '+o.note:''}</span><div style="display:flex;gap:4px"><select onchange="updStat('${o.id}',this.value)" style="font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid var(--gray-200)"><option value="confirmed" ${o.status==='confirmed'?'selected':''}>已确认</option><option value="preparing" ${o.status==='preparing'?'selected':''}>备货中</option><option value="delivering" ${o.status==='delivering'?'selected':''}>配送中</option><option value="done" ${o.status==='done'?'selected':''}>已完成</option></select><button class="btn btn-xs ${o.paid?'btn-green':'btn-secondary'}" onclick="togglePaid('${o.id}')" style="font-size:10px;padding:4px 6px">${o.paid?'💰已付':'💳未付'}</button><button class="btn btn-xs btn-secondary" onclick="delOrd('${o.id}')">删除</button></div></div></div>`).join('')||'<div class="empty">📥<p>暂无</p></div>'}</div></div>`;
 }
+function togglePaid(id){var o=D.orders.find(function(x){return x.id===id});if(o){o.paid=!o.paid;save();t(o.paid?"已付款":"未付款");bOrders()}}
 function updStat(id,s){const o=D.orders.find(x=>x.id===id);if(o){o.status=s;save();t('已更新')}}
 function delOrd(id){if(!confirm('删除?'))return;D.orders=D.orders.filter(o=>o.id!==id);save();bOrders();t('已删除')}
 
@@ -786,7 +803,7 @@ function bDishes(){
 
   // Settings
   h+=`<div class="card mt12"><div class="card-header">⚙️设置</div>
-    <div class="fg"><label class="fl">管理密码</label><div style="display:flex;gap:8px"><input id="set-pw" value="${D.password}" style="flex:1"><button class="btn btn-primary btn-sm" onclick="D.password=document.getElementById('set-pw').value.trim();save();t('已更新')">保存</button></div></div>
+    <div class="fg"><label class="fl">管理密码</label><div style="display:flex;gap:8px"><input id="set-pw" value="${D.password}" style="flex:1"><button class="btn btn-primary btn-sm" onclick="D.password=document.getElementById('set-pw').value.trim();save();t('已更新')">保存</button></div></div><div class="fg"><label class="fl">💳 收款码图片</label><label class="img-upload-box ${D.paymentQR?'has-img':''}" id="qr-upload" style="width:160px;height:160px">${D.paymentQR?'<img src="'+D.paymentQR+'" style="width:100%;height:100%;object-fit:cover">':'<span style="font-size:32px;color:var(--gray-400)">+</span>'}<input type="file" accept="image/*" onchange="uploadQR(this)"></label><p class="sm gray mt8">上传微信收款码，客户下单后展示</p></div>
             <div class="fg"><p class="sm" style="color:var(--orange)">🏘️ 小区/楼幢/单元/室号在「🏠地址」管理页面编辑</p></div>
     <button class="btn btn-danger btn-sm mt8" onclick="if(confirm('重置全部数据？不可恢复！')){localStorage.removeItem('${STORAGE}');location.reload()}">⚠️ 重置全部</button></div></div>`;
 
@@ -899,6 +916,12 @@ function bCuisines(){
 function addCuisine(){const nm=document.getElementById('nc-name').value.trim();if(!nm){t('请输入名称');return};if(D.cuisines.includes(nm)){t('已存在');return};D.cuisines.push(nm);save();bCuisines();t('已添加 '+nm)}
 function editCuisine(i,old){const nm=prompt('新名称',old);if(!nm||nm===old)return;D.dishes.forEach(d=>{if(d.cuisine===old)d.cuisine=nm});D.cuisines[i]=nm;save();bCuisines();t('已更新')}
 function delCuisine(i,name){if(D.cuisines.length<=1){t('至少保留一个菜系');return};if(!confirm('删除「'+name+'」？该菜系下的菜品将归入「家常菜」'))return;D.dishes.forEach(d=>{if(d.cuisine===name)d.cuisine='家常菜'});D.cuisines.splice(i,1);if(!D.cuisines.includes('家常菜'))D.cuisines.push('家常菜');save();bCuisines();t('已删除')}
+
+function uploadQR(fi){
+  var f=fi.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(e){var img=new Image();img.onload=function(){var cv=document.createElement('canvas');var mw=800;var w=img.width,h=img.height;if(w>mw){h=h*(mw/w);w=mw}cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);D.paymentQR=cv.toDataURL('image/jpeg',0.6);save();
+    var box=document.getElementById('qr-upload');if(box){box.classList.add('has-img');box.innerHTML='<img src="'+D.paymentQR+'" style="width:100%;height:100%;object-fit:cover"><input type="file" accept="image/*" onchange="uploadQR(this)">'}t('收款码已上传')};img.src=e.target.result};r.readAsDataURL(f);
+}
 
 // ==================== COMMUNITIES ADMIN ====================
 function bCommunities(){
