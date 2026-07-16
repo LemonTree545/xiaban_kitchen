@@ -415,6 +415,9 @@ async function loadFromCloud(){
   }}catch(e){}
   return false;
 }
+let cp='menu',pk='a',menuTab='dishes',isAdmin=false,at='dash';
+let sel={},selVeg={},selVegCut={},oName='',oWxName='',oAddr={cid:'',bid:'',uid:'',room:''},oTimeSlot=TIME_SLOTS[0],oNote='';
+
 (function(){
   // 1. Load from localStorage instantly → page renders immediately
   try{var r=localStorage.getItem(STORAGE);if(r){var s=JSON.parse(r);D={...defData(),...s};
@@ -438,9 +441,7 @@ async function loadFromCloud(){
   }).catch(function(){});
 })();
 
-// ==================== STATE ====================
-let cp='menu',pk='a',menuTab='dishes',isAdmin=false,at='dash';
-let sel={},selVeg={},selVegCut={},oName='',oWxName='',oAddr={cid:'',bid:'',uid:'',room:''},oTimeSlot=TIME_SLOTS[0],oNote='';
+// ==================== STATE (declared above init) ====================
 
 // ==================== NAV ====================
 function goPage(p){
