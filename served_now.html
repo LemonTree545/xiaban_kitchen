@@ -143,28 +143,6 @@ textarea{resize:vertical;min-height:56px}
 .cart-btn{padding:7px 14px;background:var(--orange);color:#fff;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
 /* Payment modal */
 .pay-qr-wrap{display:flex;gap:12px;justify-content:center;margin:12px 0}
-/* Cart modal items */
-.cart-item{background:var(--gray-50);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px}
-.cart-item-top{display:flex;gap:10px;align-items:flex-start}
-.cart-item-img{width:44px;height:44px;border-radius:8px;background:var(--orange-light);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
-.cart-item-img img{width:100%;height:100%;object-fit:cover}
-.cart-item-info{flex:1;min-width:0}
-.cart-item-name{font-size:13px;font-weight:700}
-.cart-item-detail{font-size:11px;color:var(--gray-400);margin-bottom:4px}
-.cart-item-label{font-size:10px;color:var(--gray-400);margin-top:2px;margin-bottom:2px}
-.cart-item-szs{display:flex;gap:4px}
-.cart-sz-btn{display:inline-block;padding:3px 8px;border:1px solid var(--gray-200);border-radius:12px;font-size:10px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s;background:var(--white)}
-.cart-sz-btn:hover{border-color:var(--orange)}
-.cart-sz-btn.active{background:var(--orange);color:#fff;border-color:var(--orange)}
-.cart-wt-row{display:flex;align-items:center;gap:4px;margin-top:2px}
-.cart-wt-inp{width:52px;padding:3px 2px;text-align:center;font-size:11px;font-weight:600;border:1px solid var(--gray-200);border-radius:6px}
-.cart-wt-u{font-size:11px;font-weight:600;color:var(--gray-600);margin-right:2px}
-.cart-wt-m, .cart-wt-p{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--gray-200);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--gray-600);cursor:pointer;font-size:13px}
-.cart-wt-m:hover, .cart-wt-p:hover{border-color:var(--green);color:var(--green)}
-.cart-item-bot{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:6px;padding-top:6px;border-top:1px solid var(--gray-200)}
-.cart-item-price{font-size:15px;font-weight:800;color:var(--orange)}
-.cart-item-del{font-size:11px;color:var(--gray-400);cursor:pointer;transition:all .15s}
-.cart-item-del:hover{color:var(--red)}
 .pay-qr-item{text-align:center;flex:1;min-width:0}
 .pay-qr-item img{width:130px;height:130px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);object-fit:contain}
 .pay-qr-label{font-size:11px;font-weight:700;margin-bottom:6px}
@@ -591,103 +569,62 @@ function bldCartFloat(){
 }
 
 function showCart(){
-  var cm=document.getElementById('cart-modal');
-  if(!cm){
-    cm=document.createElement('div');cm.className='modal-overlay';cm.id='cart-modal';
-    cm.onclick=function(e){if(e.target===this)cm.remove()};
-    var inner=document.createElement('div');inner.className='modal-box';inner.style.maxWidth='440px';
-    inner.innerHTML='<button class="modal-close" id="cart-close-btn">✕</button><h3 style="font-size:18px;margin-bottom:12px">🛒 购物车</h3><div id="cart-list"></div><div id="cart-foot" style="position:sticky;bottom:0;background:var(--white);padding:12px 0;border-top:1px solid var(--gray-100);text-align:center;display:flex;gap:10px;align-items:center;justify-content:center"><b style="font-size:16px;color:var(--orange)" id="cart-total">¥0</b><button class="btn btn-primary" style="width:auto;flex-shrink:0" id="cart-go-btn">去结算 →</button></div>';
-    cm.appendChild(inner);
-    document.body.appendChild(cm);
-    document.getElementById('cart-close-btn').onclick=function(){cm.remove()};
-    document.getElementById('cart-go-btn').onclick=function(){cm.remove();goPage('order')};
-  }
-
-  var total=0;
   var html='';
-  // Dishes
+  var total=0;
+  // Dishes in cart
   Object.keys(sel).forEach(function(id){
     if(sel[id]&&sel[id]!=='不选'){
       var d=D.dishes.find(function(x){return x.id===id});if(!d)return;
       var pt=sel[id]||'中';var m=pt==='小'?.7:pt==='大'?1.3:1;var price=Math.round(d.price*m);
-      var portions=d.portions||{};
-      var szs=['小','中','大'];
-      var szBtns='';
-      szs.forEach(function(k){
-        var g=portions[k]?portions[k].meat:0;
-        szBtns+='<span class="cart-sz-btn'+(pt===k?' active':'')+'" data-id="'+id+'" data-sz="'+k+'">'+g+'g</span>';
-      });
       total+=price;
-      html+='<div class="cart-item" id="cart-item-'+id+'">'
-        +'<div class="cart-item-top"><div class="cart-item-img">'+dishImg(d,'28px')+'</div>'
-        +'<div class="cart-item-info"><div class="cart-item-name">'+d.name+'</div><div class="cart-item-detail">'+d.cuisine+' · ¥'+d.price+'</div>'
-        +'<div class="cart-item-label">分量:</div><div class="cart-item-szs">'+szBtns+'</div></div></div>'
-        +'<div class="cart-item-bot"><b class="cart-item-price">¥'+price+'</b><span class="cart-item-del" data-dish="'+id+'">删除 →</span></div>'
+      html+='<div class="vo-item" style="align-items:flex-start">'
+        +'<div class="vo-img">'+dishImg(d,'24px')+'</div>'
+        +'<div class="vo-info"><div class="vo-name">'+d.name+'</div><div class="vo-detail">'+d.cuisine+' · ¥'+d.price+'/中份</div>'
+        +'<div class="pt-group" style="margin-top:4px" onclick="event.stopPropagation()">'
+          +'<div class="pt-btn'+(pt==='小'?' active':'')+'" onclick="setP(''+id+'','小');buildMenu();showCart()">小</div>'
+          +'<div class="pt-btn'+(pt==='中'?' active':'')+'" onclick="setP(''+id+'','中');buildMenu();showCart()">中</div>'
+          +'<div class="pt-btn'+(pt==='大'?' active':'')+'" onclick="setP(''+id+'','大');buildMenu();showCart()">大</div>'
+        +'</div></div>'
+        +'<div style="text-align:right;flex-shrink:0"><div class="vo-price">¥'+price+'</div>'
+        +'<button class="vo-remove" onclick="event.stopPropagation();sel[''+id+'']='不选';buildMenu();showCart()" style="margin-top:4px">× 删除</button></div>'
         +'</div>';
     }
   });
-  // Veggies
+  // Veggies in cart
   Object.keys(selVeg).forEach(function(id){
-    var g=selVeg[id]||0;if(g<=0)return;
-    var v=D.veggies.find(function(x){return x.id===id});if(!v)return;
-    var cut=selVegCut[id]||'块状';
-    var price=Math.round(g*v.pricePerGram*100)/100;
-    total+=price;
-    html+='<div class="cart-item" id="cart-item-'+id+'">'
-      +'<div class="cart-item-top"><div class="cart-item-img">'+vegImg(v)+'</div>'
-      +'<div class="cart-item-info"><div class="cart-item-name">'+v.name+'</div><div class="cart-item-detail">'+cut+' · ¥'+((v.pricePerGram*100)).toFixed(2)+'/100g</div>'
-      +'<div class="cart-item-label">克数:</div><div class="cart-wt-row"><input type="number" class="cart-wt-inp" value="'+g+'" data-veg="'+id+'"><span class="cart-wt-u">g</span><span class="cart-wt-m" data-veg="'+id+'" data-d="-">−</span><span class="cart-wt-p" data-veg="'+id+'" data-d="+">+</span></div></div></div>'
-      +'<div class="cart-item-bot"><b class="cart-item-price">¥'+price.toFixed(1)+'</b><span class="cart-item-del" data-veg="'+id+'">删除 →</span></div>'
-      +'</div>';
-  });
-
-  document.getElementById('cart-list').innerHTML=html||'<div class="empty">🛒<p>购物车是空的</p></div>';
-  document.getElementById('cart-total').textContent='合计 ¥'+total.toFixed(1);
-
-  // Attach event listeners
-  cm.querySelectorAll('.cart-sz-btn').forEach(function(b){
-    b.onclick=function(e){e.stopPropagation();sel[this.dataset.id]=this.dataset.sz;buildMenu();refreshCart();};
-  });
-  cm.querySelectorAll('.cart-item-del').forEach(function(s){
-    s.onclick=function(e){e.stopPropagation();
-      if(this.dataset.dish){sel[this.dataset.dish]='不选';buildMenu();refreshCart();}
-      else if(this.dataset.veg){selVeg[this.dataset.veg]=0;buildMenu();refreshCart();}
-    };
-  });
-  cm.querySelectorAll('.cart-wt-inp').forEach(function(inp){
-    inp.onchange=function(){selVeg[this.dataset.veg]=parseInt(this.value)||0;buildMenu();refreshCart();};
-    inp.onclick=function(e){e.stopPropagation()};
-  });
-  cm.querySelectorAll('.cart-wt-m, .cart-wt-p').forEach(function(b){
-    b.onclick=function(e){e.stopPropagation();var c=selVeg[this.dataset.veg]||0;selVeg[this.dataset.veg]=Math.max(0,c+(this.dataset.d==='+'?50:-50));buildMenu();refreshCart();};
-  });
-  bldCartFloat();
-}
-
-function refreshCart(){
-  var cm=document.getElementById('cart-modal');if(!cm)return;
-  var total=0;
-  Object.keys(sel).forEach(function(id){
-    if(sel[id]&&sel[id]!=='不选'){
-      var d=D.dishes.find(function(x){return x.id===id});if(!d)return;
-      var pt=sel[id]||'中';var m=pt==='小'?.7:pt==='大'?1.3:1;
-      total+=Math.round(d.price*m);
-      var item=document.getElementById('cart-item-'+id);if(!item)return;
-      item.querySelector('.cart-item-price').textContent='¥'+Math.round(d.price*m);
-      item.querySelectorAll('.cart-sz-btn').forEach(function(b){b.classList.toggle('active',b.dataset.sz===pt)});
+    var g=selVeg[id]||0;if(g>0){
+      var v=D.veggies.find(function(x){return x.id===id});if(!v)return;
+      var cut=selVegCut[id]||'块状';
+      var price=Math.round(g*v.pricePerGram*100)/100;
+      total+=price;
+      html+='<div class="vo-item" style="align-items:flex-start">'
+        +'<div class="vo-img">'+vegImg(v)+'</div>'
+        +'<div class="vo-info"><div class="vo-name">'+v.name+'</div><div class="vo-detail">'+cut+' · ¥'+((v.pricePerGram*100)).toFixed(2)+'/100g</div>'
+        +'<div class="wt-row" style="margin-top:4px" onclick="event.stopPropagation()">'
+          +'<input type="number" class="wt-input" value="'+g+'" min="0" step="10" onchange="selVeg[''+id+'']=parseInt(this.value)||0;showCart();buildMenu();bldCartFloat()" onclick="event.stopPropagation()">'
+          +'<span class="wt-unit">g</span>'
+          +'<button class="wt-btn" onclick="event.stopPropagation();adjVegWt2(''+id+'',-50)">−</button>'
+          +'<button class="wt-btn" onclick="event.stopPropagation();adjVegWt2(''+id+'',50)">+</button>'
+        +'</div></div>'
+        +'<div style="text-align:right;flex-shrink:0"><div class="vo-price">¥'+price.toFixed(1)+'</div>'
+        +'<button class="vo-remove" onclick="event.stopPropagation();selVeg[''+id+'']=0;showCart();buildMenu();bldCartFloat()" style="margin-top:4px">× 删除</button></div>'
+        +'</div>';
     }
   });
-  Object.keys(selVeg).forEach(function(id){
-    var g=selVeg[id]||0;if(g<=0)return;
-    var v=D.veggies.find(function(x){return x.id===id});if(!v)return;
-    var price=Math.round(g*v.pricePerGram*100)/100;
-    total+=price;
-    var item=document.getElementById('cart-item-'+id);if(!item)return;
-    item.querySelector('.cart-item-price').textContent='¥'+price.toFixed(1);
-    var inp=item.querySelector('.cart-wt-inp');if(inp&&parseInt(inp.value)!==g)inp.value=g;
-  });
-  document.getElementById('cart-total').textContent='合计 ¥'+total.toFixed(1);
-  bldCartFloat();
+
+  if(!html)html='<div class="empty">🛒<p>购物车是空的</p></div>';
+  else html='<div style="padding-bottom:80px">'+html+'</div><div style="position:sticky;bottom:0;background:var(--white);padding:12px 0;border-top:1px solid var(--gray-100);text-align:center;display:flex;gap:10px;align-items:center;justify-content:center"><b style="font-size:16px;color:var(--orange)">合计 ¥'+total.toFixed(1)+'</b><button class="btn btn-primary" style="width:auto;flex-shrink:0" onclick="document.getElementById('cart-modal').remove();goPage('order')">去结算 →</button></div>';
+
+  var ex=document.getElementById('cart-modal');if(ex)ex.remove();
+  document.body.insertAdjacentHTML('beforeend','<div class="modal-overlay" id="cart-modal" onclick="if(event.target===this)this.remove()"><div class="modal-box" style="max-width:440px"><button class="modal-close" onclick="document.getElementById('cart-modal').remove()">✕</button><h3 style="font-size:18px;margin-bottom:12px">🛒 购物车</h3>'+html+'</div></div>');
+}
+
+function adjVegWt2(id,delta){
+  var cur=selVeg[id]||0;
+  var w=cur+delta;
+  if(w<0)w=0;
+  selVeg[id]=w;
+  showCart();buildMenu();bldCartFloat();
 }
 
 // ==================== ORDER ====================
