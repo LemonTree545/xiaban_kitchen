@@ -61,10 +61,22 @@ CREATE TABLE IF NOT EXISTS orders (
   package_fee REAL DEFAULT 0,
   total REAL DEFAULT 0,
   note TEXT DEFAULT '',
-  status TEXT DEFAULT 'confirmed',
+  status TEXT DEFAULT 'pending_payment',
   paid INTEGER DEFAULT 0,
+  needs_review INTEGER DEFAULT 0,
+  idempotency_key TEXT NOT NULL DEFAULT '',
+  lookup_token_hash TEXT NOT NULL DEFAULT '',
+  expires_at TEXT,
+  payment_submitted_at TEXT,
+  paid_confirmed_at TEXT,
+  updated_at TEXT DEFAULT (datetime('now')),
   created_at TEXT DEFAULT (datetime('now'))
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_idempotency_key
+  ON orders(idempotency_key) WHERE idempotency_key <> '';
+CREATE INDEX IF NOT EXISTS idx_orders_status_expires_at
+  ON orders(status, expires_at);
 
 -- 客户
 CREATE TABLE IF NOT EXISTS customers (
@@ -86,7 +98,6 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 -- 初始化默认数据
-INSERT OR IGNORE INTO settings (key, value) VALUES ('password', '888888');
 INSERT OR IGNORE INTO settings (key, value) VALUES ('weekly_dishes', '[]');
 INSERT OR IGNORE INTO settings (key, value) VALUES ('weekly_veggies', '[]');
 
